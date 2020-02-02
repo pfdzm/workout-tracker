@@ -34,9 +34,21 @@ router.get("/api/workouts", (req, res) => {
     });
 });
 
+router.post("/api/workouts", (req, res) => {
+  console.log(req.body);
+  Workout.create({ exercises: req.body })
+    .then(dbWorkout => {
+      res.json(dbWorkout);
+    })
+    .catch(err => {
+      res.status(400).json(err);
+    });
+});
+
 // this endpoint adds an exercise to a workout based on that workout's id
 router.put("/api/workouts/:id", (req, res) => {
   const { id } = req.params;
+
   Workout.updateOne({ _id: id }, { $push: { exercises: req.body } })
     .then(dbWorkout => {
       res.json(dbWorkout);

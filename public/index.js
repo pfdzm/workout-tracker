@@ -12,24 +12,23 @@ const distanceInput = document.querySelector("#distance");
 const completeButton = document.querySelector("button.complete");
 const addButton = document.querySelector("button.add-another");
 const toast = document.querySelector("#toast");
-const newWorkout = document.querySelector(".new-workout")
+const newWorkout = document.querySelector(".new-workout");
 
 let workoutType = null;
 let shouldNavigateAway = false;
 
-init();
+// init();
 
-async function init() {
-  if (location.search.split("=")[1] === undefined) {
-    const workout = await API.getLastWorkout();
-    if(workout) {
-      location.search = "?id=" + workout._id;
-    }
-    else {
-      newWorkout.classList.add("")
-    }
-  }
-}
+// async function init() {
+//   if (location.search.split("=")[1] === undefined) {
+//     const workout = await API.getLastWorkout();
+//     if (workout) {
+//       location.search = "?id=" + workout._id;
+//     } else {
+//       newWorkout.classList.add("");
+//     }
+//   }
+// }
 
 function handleWorkoutTypeChange(event) {
   workoutType = event.target.value;
@@ -113,7 +112,12 @@ async function handleFormSubmit(event) {
     workoutData.duration = Number(resistanceDurationInput.value.trim());
   }
 
-  await API.addExercise(workoutData);
+  if (location.search.split("=")[1] === undefined) {
+    const newWork = await API.createWorkout(workoutData);
+    location.search = "?id=" + newWork._id;
+  } else {
+    await API.addExercise(workoutData);
+  }
   clearInputs();
   toast.classList.add("success");
 }
@@ -136,16 +140,16 @@ function clearInputs() {
   weightInput.value = "";
 }
 
-if(workoutTypeSelect) {
+if (workoutTypeSelect) {
   workoutTypeSelect.addEventListener("change", handleWorkoutTypeChange);
 }
-if(completeButton) {
+if (completeButton) {
   completeButton.addEventListener("click", function(event) {
     shouldNavigateAway = true;
     handleFormSubmit(event);
   });
 }
-if(addButton) {
+if (addButton) {
   addButton.addEventListener("click", handleFormSubmit);
 }
 toast.addEventListener("animationend", handleToastAnimationEnd);
